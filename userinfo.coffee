@@ -17,7 +17,9 @@ module.exports = (ioObject, slackObject, setConnectNotify) ->
   removeUser: (id)->
     if !!users[id]
       nick = users[id].nick
-      delete users[id]
+      setTimeout ->
+        delete users[id]
+      , 60000
       nick
 
   addUserIp: (req) ->
