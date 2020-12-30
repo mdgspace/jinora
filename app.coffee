@@ -4,6 +4,7 @@ if process.env.NODE_ENV != 'production'
   dotenv.load()
 
 express = require('express.io')
+session = require('express-session')
 fs = require('fs')
 path = require('path')
 CBuffer = require('CBuffer');
@@ -53,7 +54,20 @@ setConnectNotify = (val) ->
 # Setup your sessions, just like normal.
 app.use express.cookieParser()
 app.use express.bodyParser()
-app.use express.session secret: process.env.SESSION_SECRET
+
+app.set('trust proxy', 1);
+
+sessionConfig = 
+  secret: process.env.SESSION_SECRET 
+  key: 'connect.sid'
+  cookie:
+    proxy: process.env.NODE_ENV == 'production',
+    sameSite: "none"
+    secure: process.env.NODE_ENV == 'production'
+    resave: true
+    
+    
+app.use session sessionConfig
 app.use express.static __dirname + '/public'
 
 app.io.set 'transports', ['websocket', 'xhr-polling']
@@ -167,7 +181,7 @@ app.io.route 'chat:msg', (req)->
   if !req.data.avatar
     req.data.avatar = process.env.BASE_URL + "/images/default_user.png"
   # If RESERVED_NICKS_URL doesn't exist => userVerifier = ""
-  status = if !!(userVerifier) then userVerifier.verify req.data.nick, req.cookies['connect.sid'] else {"nick": true, "session": true}
+  status = if req.cookies && !!(userVerifier) then userVerifier.verify req.data.nick, req.cookies['connect.sid'] else {"nick": true, "session": true}
   storeMsg = true
 
   slackChannel = process.env.SLACK_CHANNEL
