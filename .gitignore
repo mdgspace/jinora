@@ -4,3 +4,5 @@ node_modules/
 tests/*.js
 bower_components/
 reserved_nicks
+
+.idea
