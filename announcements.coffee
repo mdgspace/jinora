@@ -31,7 +31,7 @@ module.exports = (ioObject, slackObject) ->
     req.io.emit 'announcement:data', announcement
 
   showHelp : ->
-      slack.postMessage helpText, process.env.SLACK_CHANNEL, "Jinora"
+    slack.postMessage helpText, process.env.SLACK_CHANNEL, "Jinora"
 
     interpret : (message, adminNick) ->
       index = message.indexOf(" ")
