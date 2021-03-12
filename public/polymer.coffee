@@ -28,7 +28,7 @@ $('.getinput').keydown (event) ->
     if name == '' or name == null
       name = defaultNames[Math.floor(Math.random() * defaultNames.length)]
     template.userName = name
-    template.avatar = document.location.href + "/avatars/" + hashStr(template.userName) % 24 + ".png";
+    template.avatar = document.location.href + "/avatars/" + hashStr(template.userName) % 16 + ".png";
     $('.loginscreen h1').append ' ' + name
     $('.loginscreen').addClass('form-success').delay 1200
     $('.loginscreen').fadeOut()
