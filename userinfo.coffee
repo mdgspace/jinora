@@ -67,7 +67,10 @@ module.exports = (ioObject, slackObject, setConnectNotify) ->
             }
           ]
           if user.ip.public
-            request.get {url: "http://ipwhois.app/json/#{user.ip.public}", json: true}, (err, res, data)->
+            request.get {
+              url: "http://ipwhois.app/json/#{user.ip.public}?objects=country,city,region,org,isp",
+              json: true
+            }, (err, res, data)->
               if !err
                 text += "\n\t*Location:* #{data.city}, #{data.region}, #{data.country}"
                 text += "\n\t*Org:* #{data.org}, *ISP*: #{data.isp}"
