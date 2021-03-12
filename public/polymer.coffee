@@ -28,7 +28,7 @@ $('.getinput').keydown (event) ->
     if name == '' or name == null
       name = defaultNames[Math.floor(Math.random() * defaultNames.length)]
     template.userName = name
-    template.avatar = "https://api.adorable.io/avatars/80/" + escape(template.userName) + ".png"
+    template.avatar = document.location.href + "/avatars/" + hashStr(template.userName) % 24 + ".png";
     $('.loginscreen h1').append ' ' + name
     $('.loginscreen').addClass('form-success').delay 1200
     $('.loginscreen').fadeOut()
@@ -196,3 +196,9 @@ getUserInfo = ->
             localip: ip[1]
   else
     console.log 'RTCPeerConnection failed'
+
+hashStr = (str)->
+  hash = 0
+  for i in [0...str.length]
+    hash += str.charCodeAt(i)
+  return hash;
