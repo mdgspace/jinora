@@ -31,12 +31,13 @@ module.exports = (API_TOKEN, HOOK_URL)->
     getUsers(API_TOKEN)
     getChannels(API_TOKEN)
 
-  postMessage: (message, channel, nick, icon)->
+  postMessage: (message, channel, nick, icon, attachments)->
     messageData =
       token: API_TOKEN
       text: message
       parse: "full"
       as_user: false
+      attachments: attachments
 
     if icon? and (icon[0..7] == 'https://' or icon[0..6] == 'http://')
       messageData.icon_url=icon
