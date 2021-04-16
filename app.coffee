@@ -111,7 +111,11 @@ interpretCommand = (commandText, adminNick) ->
       for i in [0..parseInt(secondWord)]
         messages.pop()
   else if firstWord is "users"
-    msg = userInfoHandler.getOnlineUsers().join ', '
+    users = userInfoHandler.getOnlineUsers()
+    if users.length
+      msg = users.join ', '
+    else
+      msg = "No active users"
     slack_utils.postMessage msg, process.env.SLACK_CHANNEL, 'Jinora'
   else if firstWord is "help"
     announcementHandler.showHelp()
