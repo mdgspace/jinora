@@ -25,7 +25,7 @@ parseMessage = (msg) ->
 #translates a slack unique userid to readable username
 
 userIdToNick = (userid) ->
-  users = slackData.users
+  users = slackData.members
   for user in users
     if user.id == userid
       return user.name
@@ -35,10 +35,14 @@ userIdToNick = (userid) ->
 #via the events
 
 sendPresenceEvent = (msg) ->
-  for user in msg["users"]
-  #ignore the slackbot
-    if user.id != 'USLACKBOT'
-      presence.emit msg.presence, userIdToNick user
+  if "user" of msg
+    if msg["user"] != 'USLACKBOT'
+      presence.emit msg.presence, userIdToNick msg["user"]
+  else
+    for user in msg["users"]
+      #ignore the slackbot
+      if user != 'USLACKBOT'
+        presence.emit msg.presence, userIdToNick user
   return
 
 getPresenceSubscriptionJson = (users) ->
@@ -64,20 +68,22 @@ presence.on 'ready', ()->
 
 module.exports = (token) ->
 #First call the presence.start method of Slack API
-  slack.rtm.start ({token: token, batch_presence_aware: 1})
+  slack.rtm.connect ({token: token, batch_presence_aware: 1})
     .then (res) ->
       #This is the initial response data with a lot of interesting keys
       #So we store it as well
-      slackData = res
-      #Connect the websocket
-      ws = new WebSocket(res.url)
-      #Sets up the callback for websocket messaging
-      ws.on 'message', parseMessage
-      ws.on 'open', (socket)->
-        presence.emit 'connect'
-      ws.on 'error', (err)->
-        presence.emit 'error', err
-      presence.on 'ready', () ->
-        ws.send getPresenceSubscriptionJson res.users
+      slack.users.list({token: token})
+        .then (res2) -> 
+          slackData = res2
+          #Connect the websocket
+          ws = new WebSocket(res.url)
+          #Sets up the callback for websocket messaging
+          ws.on 'message', parseMessage
+          ws.on 'open', (socket)->
+            presence.emit 'connect'
+          ws.on 'error', (err)->
+            presence.emit 'error', err
+          presence.on 'ready', () ->
+            ws.send getPresenceSubscriptionJson res2.members
   #Return the eventemitter
   return presence
