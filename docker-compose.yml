@@ -1,0 +1,8 @@
+version: '3'
+services:          
+    jinora:
+        build:
+            context: .
+        container_name: jinora
+        ports:
+            - "9996:3300"
